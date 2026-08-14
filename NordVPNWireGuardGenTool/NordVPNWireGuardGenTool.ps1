@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     1. Get your access token:
-       https://my.nordaccount.com/dashboard/nordvpn/access-token/f
+       https://my.nordaccount.com/dashboard/nordvpn/access-token/
        Click "Generate new token" and copy it.
 
     2. Run this script one of these ways:
@@ -121,10 +121,7 @@ function Get-NordVpnPrivateKey {
 }
 
 function Get-NordVpnCountryId {
-    param(
-        [string]$Code,
-        [string]$City
-    )
+    param([string]$Code)
 
     Write-Host "Looking up country id for '$Code'..."
     $countries = Invoke-RestMethod -Uri "https://api.nordvpn.com/v1/servers/countries" -Method Get
@@ -135,9 +132,7 @@ function Get-NordVpnCountryId {
         throw "No NordVPN country found matching code: $Code"
     }
 
-    } else {
-        Write-Host "Matched: $($country.name) (country_id $($country.id))"
-    }
+    Write-Host "Matched: $($country.name) (country_id $($country.id))"
 
     return $country.id
 }
@@ -309,7 +304,6 @@ function Show-QrCode {
 $privateKey = Get-NordVpnPrivateKey -Token $AccessToken
 
 if ($City) {
-    $null = Get-NordVpnCountryId -Code $CountryCode -City $City
     $serverInfo = Get-NordVpnServerByLocation -CountryCode $CountryCode -City $City
 } elseif ($CountryCode) {
     $countryId = Get-NordVpnCountryId -Code $CountryCode
